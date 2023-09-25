@@ -29,14 +29,19 @@ public class ReceitaResource {
     // Esse POST não consegue cadastrar o relacionamento com o cliente
     @PostMapping
     public ResponseEntity<Receita> cadastrarPaciente(@RequestBody Receita receita) {
-        try{
-            Paciente paciente = receitaRepository.findPacienteById(receita.getPaciente().getId());
-            receita.setPaciente(paciente);
-            Receita novaReceita = receitaRepository.save(receita);
-            return ResponseEntity.status(HttpStatus.CREATED).body(novaReceita);
-        }catch(Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(receita);
+     try{
+        Paciente paciente = receitaRepository.findPacienteById(receita.getPaciente().getId());
+        if (paciente == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+        receita.setPaciente(paciente);
+        Receita novaReceita = receitaRepository.save(receita);
+        return ResponseEntity.status(HttpStatus.CREATED).body(novaReceita);
+    }catch(Exception e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(receita);
     }
+}
+
+
 
 }
