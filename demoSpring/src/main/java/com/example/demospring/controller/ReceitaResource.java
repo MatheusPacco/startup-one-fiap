@@ -5,11 +5,13 @@ import com.example.demospring.model.Receita;
 import com.example.demospring.repository.PacienteRepository;
 import com.example.demospring.repository.ReceitaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("receita")
@@ -18,6 +20,7 @@ public class ReceitaResource {
     @Autowired
     private ReceitaRepository receitaRepository;
 
+    @Autowired
     private PacienteRepository pacienteRepository;
 
     @GetMapping
@@ -27,16 +30,13 @@ public class ReceitaResource {
     }
 
     // Esse POST não consegue cadastrar o relacionamento com o cliente
-    @PostMapping
-    public ResponseEntity<Receita> cadastrarPaciente(@RequestBody Receita receita) {
-        try{
-            Paciente paciente = receitaRepository.findPacienteById(receita.getPaciente().getId());
+    @PostMapping("{paciente}/cadastrarReceita")
+    public ResponseEntity<Receita> cadastrarReceita(@PathVariable (value = "paciente") int idPaciente, @RequestBody Receita receita) {
+        Receita receitaFinal = pacienteRepository.findById(idPaciente).map(paciente -> {
             receita.setPaciente(paciente);
-            Receita novaReceita = receitaRepository.save(receita);
-            return ResponseEntity.status(HttpStatus.CREATED).body(novaReceita);
-        }catch(Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(receita);
-        }
-    }
+            return receitaRepository.save(receita);
+        }).orElseThrow(() -> new ResourceNotFoundException("Not found Tutorial with id"));
 
+        return new ResponseEntity<>(receitaFinal, HttpStatus.CREATED);
+    }
 }
