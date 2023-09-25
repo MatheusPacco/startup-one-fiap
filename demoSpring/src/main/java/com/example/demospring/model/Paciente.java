@@ -36,6 +36,13 @@ public class Paciente {
     @OneToMany(mappedBy = "paciente")
     List<VacinaRealizada> vacinasRealizadas;
 
+    // Doc sobre Cascade https://www.baeldung.com/jpa-cascade-types
+    @OneToMany(mappedBy = "paciente", cascade = CascadeType.ALL)
+    private List<HistoricoMedicamento> historicoMedicamentos;
+
+    @OneToMany(mappedBy = "paciente", cascade = CascadeType.ALL)
+    private List<Receita> historicoReceitas;
+
     public Paciente(){}
 
     public Paciente(int idade) {
