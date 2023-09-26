@@ -33,7 +33,7 @@ public class VacinaResource {
         vacinaRepository.deleteById(cod);
     }
 
-    @PutMapping("{id}")
+    @PutMapping("{cod}")
     public Vacina atualizar(@RequestBody Vacina vacina, @PathVariable int cod) {
         vacina.setCod(cod);
         return vacinaRepository.save(vacina);

@@ -15,15 +15,15 @@ public class Vacina {
     @Column(name = "cod_vacina")
     private int cod;
 
-    @NotNull
-    @Column(name="nm_vacina", length = 120, nullable = false)
+    @NotBlank
+    @Column(name="nm_vacina", length = 120)
     private String nmVacina;
 
-    @NotBlank(message = "Deve ser inserido contra qual vírus a vacina tem eficâcia")
-    @Column(name="protecao_contra", length = 255, nullable = false)
+    @NotBlank
+    @Column(name="protecao_contra", length = 255)
     private String protecaoContra;
 
-    @Column(name="num_doses",nullable = false, columnDefinition = "SMALLINT")
+    @Column(name="num_doses", columnDefinition = "SMALLINT")
     private int numDoses;
 
     @Column(name="idade_recomendada", columnDefinition = "SMALLINT")
