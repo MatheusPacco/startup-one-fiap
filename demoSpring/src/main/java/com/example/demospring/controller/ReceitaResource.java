@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,15 +31,18 @@ public class ReceitaResource {
         return ResponseEntity.ok(pacientes);
     }
 
-    // Esse POST não consegue cadastrar o relacionamento com o cliente
     @PostMapping("{paciente}/cadastrarReceita")
     public ResponseEntity<Receita> cadastrarReceita(@PathVariable (value = "paciente") int idPaciente, @RequestBody Receita receita) {
-        Receita receitaFinal = pacienteRepository.findById(idPaciente).map(paciente -> {
-            receita.setPaciente(paciente);
-            return receitaRepository.save(receita);
-        }).orElseThrow(() -> new ResourceNotFoundException("Nenhum paciente foi encontrado com esse ID: " + idPaciente));
+        try{
+            Receita receitaFinal = pacienteRepository.findById(idPaciente).map(paciente -> {
+                receita.setPaciente(paciente);
+                return receitaRepository.save(receita);
+            }).orElseThrow(() -> new ResourceNotFoundException("Nenhum paciente foi encontrado com esse ID: " + idPaciente));
 
-        return new ResponseEntity<>(receitaFinal, HttpStatus.CREATED);
+            return new ResponseEntity<>(receitaFinal, HttpStatus.CREATED);
+        }catch(Exception e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PutMapping("{id}/modificar")
@@ -78,7 +82,4 @@ public class ReceitaResource {
             return  new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-
-
-
 }
