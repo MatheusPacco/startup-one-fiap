@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -81,5 +82,34 @@ public class ReceitaResource {
         }else {
             return  new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("{pacienteId}/todasreceitas")
+    public ResponseEntity<List<Receita>> todasReceitasPorPaciente(@PathVariable (value = "pacienteId") int pacienteId){
+        List<Receita> listaReceitas = receitaRepository.findAllByPacienteId(pacienteId);
+        return new ResponseEntity<>(listaReceitas, HttpStatus.OK);
+    }
+
+    @PostMapping("receitaEmMassa")
+    public ResponseEntity<List<Receita>> adicionarReceitasEmMassa(@RequestBody List<Receita> reqReceitas){
+        ArrayList<Receita> receitasCadastradas = new ArrayList<>();
+
+        if(reqReceitas.isEmpty())
+            return new ResponseEntity<>(receitasCadastradas, HttpStatus.BAD_REQUEST);
+
+        try{
+            reqReceitas.forEach((receita) -> {
+                Receita receitaSalva = pacienteRepository.findById(receita.getPaciente().getId()).map(paciente -> {
+                    receita.setPaciente(paciente);
+                    return receitaRepository.save(receita);
+                }).orElseThrow(() -> new ResourceNotFoundException("Nenhum paciente foi encontrado com esse ID"));
+
+                receitasCadastradas.add(receitaSalva);
+            });
+        }catch(Exception e){
+            return new ResponseEntity<>(reqReceitas, HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(receitasCadastradas, HttpStatus.CREATED);
     }
 }
