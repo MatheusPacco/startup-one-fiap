@@ -44,11 +44,9 @@ public class Paciente {
     private List<Receita> historicoReceitas;
 
     public Paciente(){}
-
-    public Paciente(int idade) {
-        this.idade = idade;
+    public Paciente(int id){
+        this.id = id;
     }
-
     public Paciente(int id, String nome, int idade, String email, LocalDate dtCadastro) {
         this.id = id;
         this.nome = nome;
