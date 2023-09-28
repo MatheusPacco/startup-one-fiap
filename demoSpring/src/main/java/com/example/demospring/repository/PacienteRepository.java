@@ -1,6 +1,8 @@
 package com.example.demospring.repository;
 
+import com.example.demospring.model.HistoricoMedicamento;
 import com.example.demospring.model.Paciente;
+import com.example.demospring.model.Receita;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

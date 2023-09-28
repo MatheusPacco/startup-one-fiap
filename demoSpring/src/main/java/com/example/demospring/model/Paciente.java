@@ -3,9 +3,10 @@ package com.example.demospring.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.CurrentTimestamp;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -20,14 +21,12 @@ public class Paciente {
 
     @NotBlank(message = "Nome é obrigatório")
     @Size(max = 120)
-    @NotNull
     private String nome;
 
-    @NotNull
     private int idade;
 
+    @NotBlank
     @Column(unique=true, nullable = false) // Coluna de valor único
-    @NotNull
     private String email;
 
     @Past
@@ -36,12 +35,17 @@ public class Paciente {
     @OneToMany(mappedBy = "paciente")
     List<VacinaRealizada> vacinasRealizadas;
 
+    // Doc sobre Cascade https://www.baeldung.com/jpa-cascade-types
+    @OneToMany(mappedBy = "paciente", cascade = CascadeType.ALL)
+    private List<HistoricoMedicamento> historicoMedicamentos;
+
+    @OneToMany(mappedBy = "paciente", cascade = CascadeType.ALL)
+    private List<Receita> historicoReceitas;
+
     public Paciente(){}
-
-    public Paciente(int idade) {
-        this.idade = idade;
+    public Paciente(int id){
+        this.id = id;
     }
-
     public Paciente(int id, String nome, int idade, String email, LocalDate dtCadastro) {
         this.id = id;
         this.nome = nome;

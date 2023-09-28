@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 //List status code https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
 import org.springframework.http.HttpStatus;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,9 +41,18 @@ public class PacienteResource {
 
     @ResponseStatus(code = HttpStatus.CREATED)
     @PostMapping
-    public Paciente cadastrar(@RequestBody Paciente paciente) {
-        return pacienteRepository.save(paciente);
+    public ResponseEntity<Paciente> cadastrar(@RequestBody Paciente paciente) {
+        try{
+            if(paciente.getIdade() == 0)
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+            pacienteRepository.save(paciente);
+            return new ResponseEntity<>(paciente, HttpStatus.CREATED);
+        }catch(Exception e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
+
 
     @PutMapping("{id}")
     public Paciente atualizar(@RequestBody Paciente paciente, @PathVariable int id) {
